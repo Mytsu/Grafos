@@ -5,6 +5,7 @@
 class Grafo(object):
 
     __vertices = 20
+    __direcionado = True
 
     def __init__(self):
         # criando matriz de adjacencias 20x20
@@ -12,21 +13,31 @@ class Grafo(object):
         for i in range(self.__vertices):
             self.mat[i] = [0] * self.__vertices
 
-    def inserirAresta(self, v1, v2, val):
+    def inserirAresta(self, v1, v2, val=1):
         # ira sobrepor valor na aresta
         self.mat[v1][v2] = val
+        if not self.__direcionado:
+            self.mat[v2][v1] = val
 
-    def pesquisaAresta(self, v1, v2):
+    def pesquisaAresta(self, v1, v2):        
         return self.mat[v1][v2]
     
     def removeAresta(self, v1, v2):
         self.mat[v1][v2] = 0
+        if not self.__direcionado:
+            self.mat[v2][v1] = 0
     
     def imprimeGrafo(self):
-        for i in range(self.__vertices):
-            for j in range(self.__vertices):
-                if not self.mat[i][j] == 0:
-                    print('[' + str(i) + ',' + str(j) + ']: ' + str(self.mat[i][j]))
+        if self.__direcionado:
+            for i in range(self.__vertices):
+                for j in range(self.__vertices):
+                    if not self.mat[i][j] == 0:
+                        print('[' + str(i) + ',' + str(j) + ']: ' + str(self.mat[i][j]))
+        else:
+            for i in range(self.__vertices):
+                for j in range(self.__vertices):
+                    if i <= j and not self.mat[i][j] == 0:
+                        print('[' + str(i) + ',' + str(j) + ']: ' + str(self.mat[i][j]))
 
 if __name__ == '__main__':
     grafo = Grafo()
