@@ -36,3 +36,5 @@ if __name__ == '__main__':
     grafo.inserirAresta(4, 3, 1)
     grafo.inserirAresta(2, 2, 5)
     print(grafo.imprimeGrafo())
+    grafo.removeAresta(2, 2)
+    print(grafo.pesquisaAresta(2, 2))
