@@ -11,6 +11,7 @@ class Grafo():
         self.vertices = []
         self.arestas = []
         self.direcionado = dir
+        self.tempo = 0
 
     def addVertice(self, id):
         self.vertices.append(Vertice(id))
@@ -50,4 +51,110 @@ class Grafo():
             if u == w.getOrigem():
                 grau += 1
         return grau
-        
+
+    def inicializaFonte(self, fonte):
+        for v in self.vertices:
+            v.setEstimativa(99999)
+            v.setVisitado(False)
+        fonte.setVisitado(True)
+        fonte.setEstimativa(0)
+
+    def relaxaVertice(self, u, v, w):
+        if v.getEstimativa() > (u.getEstimativa() + w.getPeso()):
+            v.setEstimativa(u.getEstimativa() + w.getPeso())
+            v.predecessor.append(u.getId())
+
+    def visita(self, u):
+        u.setVisitado(True)
+        self.tempo += 1
+        u.setInput(self.tempo)
+        v = self.buscaAdjacente(u)
+        while v is not None:
+            v.predecessor.append(u.getId())
+            self.visita(v)
+            v = self.buscaAdjacente(u)
+        self.tempo += 1
+        u.setOutput(self.tempo)
+        print("Voltando para: ", u.predecessor)
+
+    def buscaAdjacente(self, u):
+        for i in range(len(self.arestas)):
+            origem = self.arestas[i].getOrigem()
+            destino = self.arestas[i].getDestino()
+            if (u.getId() == origem.getId()) and (destino.getVisitado() == False):
+                destino.setVisitado(True)
+                return destino
+        else:
+            return None
+
+    def buscaLargura(self, id):
+        fonte = self.buscaVertice(id)
+        if fonte is None:
+            return "Vertce Nulo"
+        self.inicializaFonte(fonte)
+        lista = [fonte]
+        while 0 != len(lista):
+            u = lista[0]
+            v = self.buscaAdjacente(u)
+            if v is None:
+                lista.pop(0)
+            else:
+                self.tempo += 1
+                v.setInput(self.tempo)
+                v.predecessor.append(u.getId())
+                v.setVisitado(True)
+                lista.append(v)
+            u.setVisitado(True)
+
+    def buscaProfundidade(self):
+        self.tempo = 0
+        for v in self.vertices:
+            v.setVisitado(False)
+            v.input = 0
+            v.output = 0
+        for v in self.vertices:
+            if not v.getVisitado():
+                self.visita(v)
+
+    def Dijkstra(self, origem):
+        fonte = self.buscaVertice(origem)
+        if fonte is None:
+            return "Vertice Nulo"
+        self.inicializaFonte(fonte)
+        lista = []
+        resposta = []
+        for i in self.vertices:
+            lista.append(i)
+        while len(lista) != 0:
+            lista.sort(key=lambda u: u.estim)
+            u = lista[0]
+            v = self.buscaAdjacente(u)
+            if v is None:
+                for i in self.vertices:
+                    i.setVisitado(False)
+                self.tempo += 1
+                u.setInput(self.tempo)
+                resposta.append(lista[0])
+                lista.pop(0)
+            else:
+                w = self.buscaAresta(u, v)
+                if w is not None:
+                    self.relaxaVertice(u, v, w)
+
+        return resposta
+
+    def eh_Ponto(self, u):
+        for v in self.vertices:
+            v.setVisitado(False)
+        u.setVisitado(True)
+        self.visita(self.buscaAdjacente(u))
+        for v in self.vertices:
+            if v.getVisitado() == False:
+                return True
+    
+    def pontosArticulacao(self):
+        art = []
+        for u in self.vertices:
+            if self.eh_Ponto(u):
+                art.append(u.getId())
+        print("Pontos de Articulação", art)
