@@ -5,7 +5,7 @@
 from Vertice import Vertice
 from Aresta import Aresta
 
-class Grafo():
+class Grafo(object):
 
     def __init__(self, dir = False):
         self.vertices = []
@@ -75,7 +75,7 @@ class Grafo():
             v = self.buscaAdjacente(u)
         self.tempo += 1
         u.setOutput(self.tempo)
-        print("Voltando para: ", u.predecessor)
+        return u.predecessor
 
     def buscaAdjacente(self, u):
         for i in range(len(self.arestas)):
@@ -90,7 +90,7 @@ class Grafo():
     def buscaLargura(self, id):
         fonte = self.buscaVertice(id)
         if fonte is None:
-            return "Vertce Nulo"
+            return None
         self.inicializaFonte(fonte)
         lista = [fonte]
         while 0 != len(lista):
@@ -119,7 +119,7 @@ class Grafo():
     def Dijkstra(self, origem):
         fonte = self.buscaVertice(origem)
         if fonte is None:
-            return "Vertice Nulo"
+            return None
         self.inicializaFonte(fonte)
         lista = []
         resposta = []
@@ -157,4 +157,21 @@ class Grafo():
         for u in self.vertices:
             if self.eh_Ponto(u):
                 art.append(u.getId())
-        print("Pontos de Articulação", art)
+        return art
+
+    def eh_Ciclico(self):
+        if (len(self.arestas) > len(self.vertices) - 1):
+            return True
+        else:
+            return False
+
+    def conexoes(self, id):
+        lista = []
+        for v in self.vertices:
+            if v.getId() == id:
+                for a in self.arestas:
+                    if a.getOrigem() == v:
+                        lista.append((a.getPeso(), a.getDestino()))
+        # Retorna uma lista de tuplas com todas as ligações do 
+        # vertice indicado, na ordem `Peso, Destino` 
+        return lista
